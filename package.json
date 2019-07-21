@@ -1,0 +1,19 @@
+{
+  "name": "my-first-nuxt-app",
+  "version": "1.0.0",
+  "description": "My splendid Nuxt.js project",
+  "author": "Joe",
+  "private": true,
+  "scripts": {
+    "dev": "nuxt",
+    "build": "nuxt build",
+    "start": "nuxt start",
+    "generate": "nuxt generate"
+  },
+  "dependencies": {
+    "nuxt": "^2.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.9"
+  }
+}
