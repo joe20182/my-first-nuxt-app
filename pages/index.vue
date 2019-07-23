@@ -3,24 +3,57 @@
         <section class="intro">
             <h1>Get the latest tech news!</h1>
         </section>
-        <section class="featured-posts">
-            <PostPreview 
-                id="1" 
-                title="test" 
-                content="test test 123 321"
-                bgi="https://picsum.photos/400/300"
-            ></PostPreview>
-        </section>
+        <PostList :posts="postList"></PostList>
     </div>
 </template>
 
 <script>
-import PostPreview from '~/components/posts/PostPreview.vue'
+import PostList from '~/components/posts/PostList.vue'
 
 export default {
     components: {
-        PostPreview
-    }
+        PostList
+    },
+    asyncData(context, callback) {
+        // 生命週期比component創建還早，拿不到this，用asyncData讓資料SSR
+        setTimeout(() => {
+            // 可以用callback或promise
+            callback(null, {
+                postList: [
+                    {
+                        id: '1',
+                        title: 'Title 1',
+                        content: 'Content 1 test test...',
+                        bgi: 'https://picsum.photos/400/300'
+                    },
+                    {
+                        id: '2',
+                        title: 'Title 2',
+                        content: 'Content 2 test test...',
+                        bgi: 'https://picsum.photos/400/300'
+                    }
+                ]
+            })
+        }, 1500)
+    },
+    // data() {
+    //     return {
+    //         postList: [
+    //             {
+    //                 id: '1',
+    //                 title: 'Title 1',
+    //                 content: 'Content 1 test test...',
+    //                 bgi: 'https://picsum.photos/400/300'
+    //             },
+    //             {
+    //                 id: '2',
+    //                 title: 'Title 2',
+    //                 content: 'Content 2 test test...',
+    //                 bgi: 'https://picsum.photos/400/300'
+    //             }
+    //         ]
+    //     }
+    // }
 }
 </script>
 
@@ -48,14 +81,6 @@ export default {
             box-sizing: border-box;
             border: 1px solid black;
         }
-    }
-    .featured-posts {
-        display: flex;
-        padding: 20px;
-        box-sizing: border-box;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: center;
     }
 }
 @media (min-width: 768px) {
