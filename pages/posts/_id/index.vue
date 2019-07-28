@@ -15,22 +15,31 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
-    asyncData(context, callback) {
-        setTimeout(() => {
-            callback(null, {
-                loadedPost: {
-                    id: '1',
-                    title: `Title 1 (ID: ${context.route.params.id})`,
-                    content: 'Content 1 test test...',
-                    author: 'Joe',
-                    updatedDate: new Date(),
-                    info: 'lorem ipsum... hahaha... ewqeqwe',
-                    bgi: 'https://picsum.photos/400/300'
-                }
-            })
-        }, 1000)
-    }
+    asyncData(context) {
+        return axios.get(`https://my-nuxt-blog-f4685.firebaseio.com/posts/${context.params.id}.json`).then(res => {
+            return {
+                loadedPost: res.data
+            }
+        }).catch()
+    },
+    // asyncData(context, callback) {
+    //     setTimeout(() => {
+    //         callback(null, {
+    //             loadedPost: {
+    //                 id: '1',
+    //                 title: `Title 1 (ID: ${context.route.params.id})`,
+    //                 content: 'Content 1 test test...',
+    //                 author: 'Joe',
+    //                 updatedDate: new Date(),
+    //                 info: 'lorem ipsum... hahaha... ewqeqwe',
+    //                 bgi: 'https://picsum.photos/400/300'
+    //             }
+    //         })
+    //     }, 1000)
+    // }
 }
 </script>
 
