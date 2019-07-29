@@ -17,15 +17,13 @@ export default {
     },
     methods: {
         onSubmitted(postData) {
-            axios.post('https://my-nuxt-blog-f4685.firebaseio.com/posts.json', {
-                ...postData,
-                updatedDate: new Date()
-            }).then(res => {
+            this.$store.dispatch('AddPost', postData).then(() => {
                 this.$router.push('/admin')
-            }).catch(err => {
-                console.log(err)
-            })
+            }) 
         }
+    },
+    head: {
+        title: 'NEW POST PAGE'
     }
 }
 </script>

@@ -17,18 +17,16 @@ export default {
     },
     asyncData(context) {
         // console.log(context)
-        return axios.get(`https://my-nuxt-blog-f4685.firebaseio.com/posts/${context.params.postId}.json`).then(res => {
+        return axios.get(`${process.env.baseUrl}/posts/${context.params.postId}.json`).then(res => {
             return {
-                postDetail: res.data
+                postDetail: {...res.data, id: context.params.postId}
             }
         }).catch()
     },
     methods: {
         onSubmitted(editedData) {
-            axios.put(`https://my-nuxt-blog-f4685.firebaseio.com/posts/${this.$route.params.postId}.json`, editedData).then(res => {
+            this.$store.dispatch('EditPost', editedData).then(() => {
                 this.$router.push('/admin')
-            }).catch(err => {
-                console.log(err)
             })
         }
     }

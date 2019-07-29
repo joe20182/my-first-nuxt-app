@@ -19,7 +19,18 @@ export default {
   /*
   ** Customize the progress-bar color
   */
-  loading: { color: '#fff' },
+  loading: {
+    color: '#ff4c4c',
+    height: '4px',
+    duration: 5000
+  },
+  /*
+  ** loadingIndicator是在spa模式用的，universal無效
+  */
+  loadingIndicator: {
+    name: 'circle',
+    color: '#ff4c4c'
+  },
   /*
   ** Global CSS
   */
@@ -45,5 +56,16 @@ export default {
     */
     extend(config, ctx) {
     }
-  }
+  },
+  env: {
+    baseUrl: process.env.BASE_URL || 'https://my-nuxt-blog-f4685.firebaseio.com'
+  },
+  // rootDir: '/',
+  // router: {
+  //   linkActiveClass: 'active'
+  // },
+  // transition: {
+  //   name: 'fade',
+  //   mode: 'out-in'
+  // }
 }
