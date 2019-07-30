@@ -48,7 +48,15 @@ export default {
   ** Nuxt.js modules
   */
   modules: [
+    '@nuxtjs/axios'
   ],
+  /*
+  ** 因為我們安裝了@nuxtjs/axios的module，所以可以使用額外的設定
+  */
+  axios: {
+    baseURL: process.env.BASE_URL || 'https://my-nuxt-blog-f4685.firebaseio.com',
+    credentials: false
+  },
   /*
   ** Build configuration
   */

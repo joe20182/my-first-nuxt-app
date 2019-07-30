@@ -1,5 +1,4 @@
 import Vuex from 'vuex'
-import axios from 'axios'
 
 const createStore = () => {
     return new Vuex.Store({
@@ -40,15 +39,25 @@ const createStore = () => {
                 //         resolve()
                 //     }, 1000)
                 // })
-                return axios.get(`${process.env.baseUrl}/posts.json`).then(res => {
+                return context.app.$axios.$get('/posts.json').then(data => {
+                    // 如果全部改成用$axios的話就可以不用另外import axios了
                     const postArr = []
-                    for (const key in res.data) {
-                        postArr.push({...res.data[key], id: key})
+                    for (const key in data) {
+                        postArr.push({...data[key], id: key})
                     }
                     vuexContext.commit('SET_POSTS', postArr)
                 }).catch(err => {
                     context.error(err)
                 })
+                // return axios.get(`${process.env.baseUrl}/posts.json`).then(res => {
+                //     const postArr = []
+                //     for (const key in res.data) {
+                //         postArr.push({...res.data[key], id: key})
+                //     }
+                //     vuexContext.commit('SET_POSTS', postArr)
+                // }).catch(err => {
+                //     context.error(err)
+                // })
             },
             SetPosts({commit}, data) {
                 commit('SET_POSTS', data)
@@ -58,14 +67,14 @@ const createStore = () => {
                     ...postData,
                     updatedDate: new Date()
                 }
-                return axios.post(`${process.env.baseUrl}/posts.json`, createdPost).then(res => {
-                    commit('ADD_POST', {...createdPost, id: res.data.name})
+                return this.$axios.$post('/posts.json', createdPost).then(data => {
+                    commit('ADD_POST', {...createdPost, id: data.name})
                 }).catch(err => {
                     console.log(err)
                 })
             },
             EditPost({commit}, editedPost) {
-                return axios.put(`${process.env.baseUrl}/posts/${editedPost.id}.json`, editedPost).then(res => {
+                return this.$axios.$put(`/posts/${editedPost.id}.json`, editedPost).then(data => {
                     commit('EDIT_POST', editedPost)
                 }).catch(err => {
                     console.log(err)
