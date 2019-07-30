@@ -8,12 +8,7 @@
 </template>
 
 <script>
-import PostList from '~/components/posts/PostList.vue'
-
 export default {
-    components: {
-        PostList
-    },
     // asyncData(context, callback) {
     //     // 這log在首次進入頁面時會印在server，因為首次進入是SSR
     //     // 而從別頁換頁進來則是已經轉為SPA，所以這時會印在客戶端 

@@ -5,12 +5,7 @@
 </template>
 
 <script>
-import PostList from '@/components/posts/PostList.vue'
-
 export default {
-    components: {
-        PostList
-    },
     fetch(context) {
         // 用promise的話asyncData就不要接收callback參數了，因為若接了nuxt會等待我們呼叫callback
         // 另外asyncData跟fetch的差別是asyncData會把資料merge進data，而fetch不會，而是存在store裡
