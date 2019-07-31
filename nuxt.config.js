@@ -68,7 +68,8 @@ export default {
     }
   },
   env: {
-    baseUrl: process.env.BASE_URL || 'https://my-nuxt-blog-f4685.firebaseio.com'
+    baseUrl: process.env.BASE_URL || 'https://my-nuxt-blog-f4685.firebaseio.com',
+    fbApiKey: 'AIzaSyBOMOiEksZZVk_ipperC7xnXGQZGc0NN18'
   },
   // rootDir: '/',
   // router: {

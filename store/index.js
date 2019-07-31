@@ -3,7 +3,8 @@ import Vuex from 'vuex'
 const createStore = () => {
     return new Vuex.Store({
         state: {
-            loadedPosts: []
+            loadedPosts: [],
+            token: null
         },
         mutations: {
             SET_POSTS(state, data) {
@@ -15,6 +16,12 @@ const createStore = () => {
             EDIT_POST(state, editedPost) {
                 let postIndex = state.loadedPosts.findIndex(post => post.id === editedPost.id)
                 state.loadedPosts[postIndex] = editedPost
+            },
+            SET_TOKEN(state, token) {
+                state.token = token
+            },
+            CLEAR_TOKEN(state) {
+                state.token = null
             }
         },
         actions: {
@@ -62,28 +69,64 @@ const createStore = () => {
             SetPosts({commit}, data) {
                 commit('SET_POSTS', data)
             },
-            AddPost({commit}, postData) {
+            AddPost({commit, state}, postData) {
                 const createdPost = {
                     ...postData,
                     updatedDate: new Date()
                 }
-                return this.$axios.$post('/posts.json', createdPost).then(data => {
+                return this.$axios.$post(`/posts.json?auth=${state.token}`, createdPost).then(data => {
                     commit('ADD_POST', {...createdPost, id: data.name})
                 }).catch(err => {
                     console.log(err)
                 })
             },
-            EditPost({commit}, editedPost) {
-                return this.$axios.$put(`/posts/${editedPost.id}.json`, editedPost).then(data => {
+            EditPost({commit, state}, editedPost) {
+                return this.$axios.$put(`/posts/${editedPost.id}.json?auth=${state.token}`, editedPost).then(data => {
                     commit('EDIT_POST', editedPost)
                 }).catch(err => {
                     console.log(err)
                 })
+            },
+            AuthUser({commit, dispatch}, data) {
+                let apiUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.fbApiKey}`
+                if (!data.isLogin) {
+                    apiUrl = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${process.env.fbApiKey}`
+                }
+                return this.$axios.$post(apiUrl, {
+                    email: data.email,
+                    password: data.password,
+                    returnSecureToken: true
+                }).then(res => {
+                    console.log(res)
+                    commit('SET_TOKEN', res.idToken)
+                    localStorage.setItem('token', res.idToken)
+                    localStorage.setItem('tokenExpiration', new Date().getTime() + res.expiresIn * 1000)
+                    dispatch('SetLogoutTimer'. res.expiresIn * 1000)
+                }).catch(err => {
+                    console.log(err)
+                })
+            },
+            SetLogoutTimer({commit}, duration) {
+                setTimeout(() => {
+                    commit('CLEAR_TOKEN')
+                }, duration)
+            },
+            InitAuth({commit, dispatch}) {
+                const token = localStorage.getItem('token')
+                const tokenExpiration = localStorage.getItem('tokenExpiration')
+                if (new Date().getTime() > parseInt(tokenExpiration) || !token) {
+                    return false
+                }
+                dispatch('SetLogoutTimer', parseInt(tokenExpiration) - new Date().getTime())
+                commit('SET_TOKEN', token)
             }
         },
         getters: {
             loadedPosts(state) {
                 return state.loadedPosts
+            },
+            isAuthed(state) {
+                return state.token != null
             }
         }
     })
