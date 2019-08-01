@@ -1,3 +1,5 @@
+const bodyParser = require('body-parser')
+const axios = require('axios')
 
 export default {
   mode: 'universal',
@@ -73,10 +75,31 @@ export default {
   },
   // rootDir: '/',
   // router: {
-  //   linkActiveClass: 'active'
+  //   linkActiveClass: 'active',
+  //   middleware: ''
   // },
   // transition: {
   //   name: 'fade',
   //   mode: 'out-in'
-  // }
+  // },
+  serverMiddleware: [
+    bodyParser.json(),
+    '~/api'
+  ],
+  generate: {
+    // _postId是動態的，一般generate時無法產出動態id頁面，我們可以在這裡寫死要generate哪頁
+    // 甚至也能打接口動態取得要generate的list
+    routes: function() {
+      // return [
+      //   '/posts/-LktJ3edbi3slTT3U-px'
+      // ]
+      return axios.get('https://my-nuxt-blog-f4685.firebaseio.com/posts.json').then(res => {
+        let routeList = []
+        for (const key in res.data) {
+          routeList.push('/posts/' + key)
+        }
+        return routeList
+      })
+    }
+  }
 }

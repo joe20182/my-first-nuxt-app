@@ -1,4 +1,5 @@
 import Vuex from 'vuex'
+import Cookie from 'js-cookie'
 
 const createStore = () => {
     return new Vuex.Store({
@@ -100,25 +101,48 @@ const createStore = () => {
                     console.log(res)
                     commit('SET_TOKEN', res.idToken)
                     localStorage.setItem('token', res.idToken)
-                    localStorage.setItem('tokenExpiration', new Date().getTime() + res.expiresIn * 1000)
-                    dispatch('SetLogoutTimer'. res.expiresIn * 1000)
+                    localStorage.setItem('tokenExpiration', new Date().getTime() + parseInt(res.expiresIn) * 1000)
+                    Cookie.set('jwt', res.idToken)
+                    Cookie.set('jwtExp', new Date().getTime() + parseInt(res.expiresIn) * 1000)
+                    return this.$axios.$post('http://localhost:3000/api/track-data', {
+                        data: 'haha'
+                    })
                 }).catch(err => {
                     console.log(err)
                 })
             },
-            SetLogoutTimer({commit}, duration) {
-                setTimeout(() => {
-                    commit('CLEAR_TOKEN')
-                }, duration)
-            },
-            InitAuth({commit, dispatch}) {
-                const token = localStorage.getItem('token')
-                const tokenExpiration = localStorage.getItem('tokenExpiration')
+            InitAuth({commit, dispatch}, req) {
+                let token, tokenExpiration;
+                if (req) {
+                    if (!req.headers.cookie) {
+                        return false
+                    }
+                    const jwtCookie = req.headers.cookie.split(';').find(c => c.trim().startsWith('jwt='))
+                    const jwtExpCookie = req.headers.cookie.split(';').find(c => c.trim().startsWith('jwtExp='))
+                    if (!jwtCookie) {
+                        return false
+                    }
+                    token = jwtCookie.split('=')[1]
+                    tokenExpiration = jwtExpCookie.split('=')[1]
+                } else if (process.client) {
+                    token = localStorage.getItem('token')
+                    tokenExpiration = localStorage.getItem('tokenExpiration')
+                }
                 if (new Date().getTime() > parseInt(tokenExpiration) || !token) {
+                    console.log('No token or invalid!')
+                    dispatch('Logout')
                     return false
                 }
-                dispatch('SetLogoutTimer', parseInt(tokenExpiration) - new Date().getTime())
                 commit('SET_TOKEN', token)
+            },
+            Logout({commit}) {
+                commit('CLEAR_TOKEN')
+                if (process.client) {
+                    localStorage.removeItem('token')
+                    localStorage.removeItem('tokenExpiration')
+                }
+                Cookie.remove('jwt')
+                Cookie.remove('jwtExp')
             }
         },
         getters: {
